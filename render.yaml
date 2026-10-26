@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: privatepad-api
+    runtime: docker
+    dockerfilePath: ./backend/Dockerfile
+    dockerContext: ./backend
+    plan: free
+    region: oregon
+    envVars:
+      - key: ASPNETCORE_ENVIRONMENT
+        value: Production
+      - key: MongoDbSettings__ConnectionString
+        sync: false
+      - key: MongoDbSettings__DatabaseName
+        value: PrivatePadDb
+      - key: MongoDbSettings__CollectionName
+        value: Notes
+

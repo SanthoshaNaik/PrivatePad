@@ -1,0 +1,4 @@
+<Solution>
+  <Project Path="SecureNotepad.Api.Tests/SecureNotepad.Api.Tests.csproj" />
+  <Project Path="SecureNotepad.Api/SecureNotepad.Api.csproj" />
+</Solution>

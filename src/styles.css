@@ -1,0 +1,35 @@
+:root {
+  --color-background: #F9EBD7;
+  --color-primary: #046A38;
+  --color-primary-hover: #03522b;
+  --color-danger: #E34222;
+  --color-danger-hover: #b83318;
+  --color-surface: #FFFFFF;
+  --color-text: #2D2825;
+  --color-text-muted: #6B625B;
+  --color-border: #D5C7B4;
+  --color-border-focus: #046A38;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-background);
+  color: var(--color-text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.5;
+  min-height: 100vh;
+}
+
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+input, textarea, button {
+  font-size: 1rem;
+}

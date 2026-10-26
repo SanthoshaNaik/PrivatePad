@@ -1,0 +1,190 @@
+<div class="notepad-container">
+
+  <!-- ============================================== -->
+  <!-- FLOATING POPUP TOAST NOTIFICATION             -->
+  <!-- ============================================== -->
+  @if (status()) {
+    <div class="toast-popup-container" role="alert" aria-live="polite">
+      <div class="toast-popup" [ngClass]="'toast-' + status()!.type">
+        <span class="toast-message">{{ status()!.text }}</span>
+        <button
+          type="button"
+          class="toast-close"
+          (click)="clearStatus()"
+          aria-label="Dismiss notification">
+          &times;
+        </button>
+      </div>
+    </div>
+  }
+
+  <!-- ============================================== -->
+  <!-- SCREEN 1: SECRET KEY ENTRANCE SCREEN           -->
+  <!-- ============================================== -->
+  @if (activeScreen() === 'login') {
+    <main class="login-wrapper">
+      <div class="login-card">
+        <h1 class="logo-title">PrivatePad</h1>
+        <p class="login-subtitle">
+          No accounts. No signups. No installs. Just choose one code.
+        </p>
+
+        <form (ngSubmit)="openPad()" class="login-form">
+          <div class="form-group">
+            <label for="secret-key-input">Secret Key</label>
+            <div class="passphrase-input-container">
+              <input
+                id="secret-key-input"
+                [type]="showSecretKey() ? 'text' : 'password'"
+                class="input-control passphrase-input"
+                placeholder="Enter your secret key..."
+                [(ngModel)]="secretKey"
+                name="secretKey"
+                [disabled]="isProcessing()"
+                autofocus
+                autocomplete="off" />
+              <button
+                type="button"
+                class="btn-toggle-pass"
+                (click)="toggleSecretKeyVisibility()"
+                [attr.aria-label]="showSecretKey() ? 'Hide secret key' : 'Show secret key'">
+                {{ showSecretKey() ? 'Hide' : 'Show' }}
+              </button>
+            </div>
+          </div>
+
+          <button
+            type="submit"
+            class="btn btn-primary btn-block btn-lg"
+            [disabled]="isProcessing() || !secretKey().trim()">
+            {{ isProcessing() ? 'Opening...' : 'Open Pad' }}
+          </button>
+        </form>
+
+        <p class="login-privacy-note">
+          Your secret key is never sent to the server. All encryption and decryption happen directly in your browser.
+        </p>
+      </div>
+    </main>
+  }
+
+  <!-- ============================================== -->
+  <!-- SCREEN 2: ACTIVE NOTE WRITING EDITOR           -->
+  <!-- ============================================== -->
+  @if (activeScreen() === 'editor') {
+    <!-- Minimal Header -->
+    <header class="header">
+      <div class="header-content">
+        <div class="header-brand">
+          <h1 class="logo-title clickable-logo" (click)="lockPad()" title="Click to go back to secret key page">PrivatePad</h1>
+          <span class="pad-status-tag" [class.new-tag]="isNewPad()">
+            {{ isNewPad() ? 'New Pad' : 'Saved Pad' }}
+          </span>
+        </div>
+
+        <div class="header-actions">
+          <button
+            type="button"
+            class="btn btn-danger btn-sm"
+            (click)="requestDelete()"
+            [disabled]="isProcessing()">
+            Delete Pad
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Professional Delete Confirmation Modal Dialog -->
+    @if (showDeleteConfirm()) {
+      <div class="modal-backdrop" (click)="cancelDelete()">
+        <div
+          class="modal-dialog"
+          role="dialog"
+          aria-modal="true"
+          aria-labelledby="confirm-modal-title"
+          (click)="$event.stopPropagation()">
+          
+          <div class="modal-header">
+            <h2 id="confirm-modal-title" class="modal-title">Delete Pad</h2>
+            <button
+              type="button"
+              class="modal-close-btn"
+              (click)="cancelDelete()"
+              aria-label="Close dialog">
+              &times;
+            </button>
+          </div>
+
+          <div class="modal-body">
+            <p class="modal-message">
+              Are you sure you want to permanently delete this pad? This will remove all encrypted data from the database.
+            </p>
+            <p class="modal-warning">
+              This action cannot be undone.
+            </p>
+          </div>
+
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              (click)="cancelDelete()"
+              [disabled]="isProcessing()">
+              Cancel
+            </button>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="confirmDelete()"
+              [disabled]="isProcessing()">
+              {{ isProcessing() ? 'Deleting...' : 'Yes, Permanently Delete' }}
+            </button>
+          </div>
+        </div>
+      </div>
+    }
+
+    <!-- Note Writing Surface -->
+    <main class="editor-section">
+      <div class="editor-wrapper">
+        <label for="pad-content" class="sr-only">Note Content</label>
+        <textarea
+          id="pad-content"
+          class="note-textarea"
+          placeholder="Start writing your private note here... Your content is encrypted locally with your secret key before saving."
+          [ngModel]="noteText()"
+          (ngModelChange)="noteText.set($event)"
+          [disabled]="isProcessing()"
+          spellcheck="true"></textarea>
+
+        <div class="editor-meta">
+          <span class="char-count" [class.char-limit-exceeded]="isOverLimit()">
+            {{ charCount() | number }} / 100,000 characters
+          </span>
+        </div>
+      </div>
+
+      <!-- Controls & Save Button -->
+      <div class="controls-bar">
+        <button
+          type="button"
+          class="btn btn-secondary"
+          (click)="lockPad()"
+          [disabled]="isProcessing()"
+          title="Return to the secret key entrance page">
+          &larr; Back to Secret Page
+        </button>
+
+        <div class="actions-group">
+          <button
+            type="button"
+            class="btn btn-primary btn-save"
+            (click)="saveNote()"
+            [disabled]="isProcessing() || isOverLimit() || !noteText().trim()">
+            {{ isProcessing() ? 'Encrypting & Saving...' : 'Save Note' }}
+          </button>
+        </div>
+      </div>
+    </main>
+  }
+</div>
